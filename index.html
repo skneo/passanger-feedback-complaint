@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passanger Feedback/Complaint</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+</head>
+<body>
+    <div class="container my-3">
+        <h3>Passanger Feedback/Complaint</h3>
+        <form method="post" x-data="handleForm()">
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="name" class="form-label fw-bold">Name *</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter your name" required>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="email" class="form-label fw-bold">Email *</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="phone" class="form-label fw-bold">Phone *</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="tel" name="phone" maxlength="10" minlength="10" class="form-control" id="phone" placeholder="Enter your phone" required>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="station" class="form-label fw-bold">Station</label>
+                </div>
+                <div class="col-md-8" @click.outside="isOpen = false">
+                    <input type="text" x-model="searchQuery" @focus="isOpen = true" name="station" class="form-control" id="station" placeholder="Search station">
+                    <div x-show="isOpen" class="w-100 border rounded-3" style="max-height: 200px; overflow-y: auto;">
+                        <template x-for="(station, index) in filteredStations" :key="index">
+                            <div  @click="selectStation(station)" class="p-2 border-bottom moucehover">
+                                <span x-text="station"></span>
+                            </div>
+                        </template>
+                        <style>
+                            .moucehover:hover {
+                                background-color: #0d6efd;
+                                color: #fff;
+                                cursor: pointer;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="type_feed" class="form-label fw-bold">Type of Feedback *</label>
+                </div>
+                <div class="col-md-8">
+                    <select x-model="feedbackType" id='type_feed' name="type_feed" class="form-control selectpicker" required="">
+                        <option selected="" value="">Select</option>
+                        <option value="complaint">Complaint</option>
+                        <option value="suggestion">Suggestion</option>
+                        <option value="appreciation">Appreciation</option>
+                    </select>
+                </div>
+            </div>
+            <template x-if="feedbackType === 'complaint'">
+                <div class="mb-3 row">
+                    <div class="col-md-4">
+                        <label for="complaint_type" class="form-label fw-bold">Type of Complaint *</label>
+                    </div>
+                    <div class="col-md-8">
+                        <select id='complaint_type' x-model="complaint_type" name="complaint_type" class="form-control selectpicker" required>
+                            <option selected="" value="">Select</option>
+                            <option value="transaction">Transaction</option>
+                            <option value="other">Other Issue</option>
+                        </select>
+                    </div>
+                </div>
+            </template>
+            
+            <template x-if="feedbackType === 'complaint' && complaint_type === 'transaction'">
+                <div>
+                    <div class="mb-3 row">
+                        <div class="col-md-4">
+                            <label for="transaction_type" class="form-label fw-bold">Type of Transaction *</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select id='transaction_type' name="transaction_type" class="form-control selectpicker" required>
+                                <option selected="" value="">Select</option>
+                                <option value="Online Recharge">Online Recharge</option>
+                                <option value="UPI related">UPI related</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-md-4">
+                            <label for="card_no" class="form-label fw-bold">Card No</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="number" name="card_no" class="form-control" id="card_no" placeholder="enter card no">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-md-4">
+                            <label for="amount" class="form-label fw-bold">Amount *</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="number" name="amount" class="form-control" id="amount" placeholder="enter amount" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-md-4">
+                            <label for="transaction_id" class="form-label fw-bold">Transaction Id *</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="transaction_id" class="form-control" id="transaction_id" placeholder="enter transaction id" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-md-4">
+                            <label for="date" class="form-label fw-bold">Date of Transaction *</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="date" name="date" class="form-control" id="date" :min="startDate" :max="endDate" required>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="description" class="form-label fw-bold">Description *</label>
+                </div>
+                <div class="col-md-8">
+                    <textarea name="description" class="form-control" id="description" placeholder="Enter your description" required minlength="10"></textarea>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="attachment" class="form-label fw-bold">Attachment</label>
+                </div>
+                <div class="col-md-8">
+                    <input @change="checkFileSize" x-ref="fileInput" type="file" name="attachment" class="form-control" id="attachment" accept=".jpg,.jpeg,.png,.pdf">
+                    <div x-text="message" style="color: red;"></div>
+                    <small>* Please upload related file, Max file size: 1MB</small>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-4">
+                    <label for="description" class="form-label fw-bold">Captcha *</label>
+                </div>
+                <div class="col-md-8">
+                    <img src="https://intranet.dmrc.org/payslip/randomimage.php" id="captchaImage" alt="Captcha">
+                    <span>
+                        <button type="button" id="refresh" @click="captchaImage.src = `https://intranet.dmrc.org/payslip/randomimage.php?${new Date().getTime()}`">&#8634;</button>
+                    </span>
+                    <input type="text" name="captcha" class="form-control" id="captcha" placeholder="enter captcha" required>
+                </div>
+            </div>
+            <center>
+                <button type="submit" class="btn btn-primary px-5">Submit</button>
+            </center>
+        </form>
+        <script>
+            function handleForm() {
+                return {
+                    startDate: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().split('T')[0],
+                    endDate: new Date().toISOString().split('T')[0], 
+                    feedbackType: '',
+                    complaint_type: '',
+                    stations: ["ADARSH NAGAR","AIIMS","AKSHARDHAM","ANAND VIHAR-Blue Line","ANAND VIHAR-Pink Line","ARJANGARH","ARTHALA","ASHOK PARK MAIN","ASHRAM","AZADPUR-Pink Line","AZADPUR-Yellow Line","BADARPUR","BADKAL MOR","BARAKHAMBA","BATA CHOWK","BELVEDERE TOWERS","BHIKAJI CAMA PLACE","BOTANICAL GARDEN-Blue line","BOTANICAL GARDEN-Magenta Line","BUS STAND (Bahadurgarh City)","CENTRAL SECRETARIAT- Yellow Line","CENTRAL SECRETARIAT-Violet Line","CHANDNI CHOWK","CHAWRI BAZAR","CHHATARPUR","CHIRAG DELHI","CITY PARK (Brig Hoshiar Singh)","CIVIL LINE","CYBER CITY","DABRI MOR","DASHRATPURI","DELHI AEROCITY","DELHI CANT","DELHI GATE","DHANSA BUSS STAND","DHAULA KUAN","DILSHAD GARDEN","DURGABAI DESHMUKH SOUTH CAMPUS-Pink Line","DWARKA","DWARKA 21 (AMEL)","DWARKA MOR","DWARKA SECTOR 10","DWARKA SECTOR 11","DWARKA SECTOR 12","DWARKA SECTOR 13","DWARKA SECTOR 14","DWARKA SECTOR 21-Blue line","DWARKA SECTOR 8","DWARKA SECTOR 9","DWARKA-Grey Line","EAST AZAD NAGAR","ESCORT MUJESAR","ESI HOSPITAL","FARIDABAD OLD","GHEWRA METRO STATION","GHITORINI","GOKULPURI","GOLF COURSE","GOVINDPURI","GREATER KAILASH","GREEN PARK","GTB NAGAR","GURU DRONACHARYA","HAIDARPUR","HAUZ KHAS-Magenta Line","HAUZ KHAS-Yellow Line","HAZRAT NIZAMUDDIN","HINDON RIVER","IFFCO CHOWK","IGDA","IGI AIRPORT","IICC Yashobhoomi","IIT","INA-Pink Line","INA-Yellow Line","INDERLOK-1","INDERLOK-1","INDRAPRASTHA","IP EXTENSION","ITO","JAFFRABAD","JAHANGIRPURI","JAMA MASJID","JAMIA MILIA ISLAMIA","JANAKPURI EAST","JANAKPURI WEST","JANAKPURI WEST-Magenta Line","JANGPURA","JANPATH","JASOLA APOLLO","JASOLA VIHAR","JHANDEWALAN","JHILMIL","JLN STADIUM","JOHRI ENCLAVE","JOR BAGH","KAILASH COLONY","KALINDI KUNJ","KALKAJI MANDIR-Magenta Line","KALKAJI MANDIR-Violet Line","KANHAIYA NAGAR","KARKARDUMA COURT","KARKARDUMA-Blue line","KARKARDUMA-Pink Line","KAROL BAGH","KASHMERE GATE-Red Line","KASHMERE GATE-Violet Line","KASHMERE GATE-Yellow Line","KAUSHAMBI","KESHAVPURAM","KHAN MARKET","KIRSHNA NAGAR","KIRTI NAGAR-Blue Line","KIRTI NAGAR-Green Line","KOHAT ENCLAVE","LAJPAT NAGAR-Pink Line","LAJPAT NAGAR-Violet Line","LAL QUILA","LAXMI NAGAR","LOK KALYAN MARG","MADIPUR","MAJLIS PARK","MALVIYA NAGAR","MANDAWALI- WEST VINOD NAGAR","MANDI HOUSE-Blue line","MANDI HOUSE-Violet Line","MANSAROVAR PARK","MAUJPUR","MAULSARI AVENUE","MAYAPURI","MAYUR VIHAR PH. EXT.","MAYUR VIHAR PHASE I-Blue Line","MAYUR VIHAR PHASE I-Pink Line","MAYUR VIHAR POCKET-I","MEWLA MAHARAJPUR","MG ROAD","MILLENNIUM CITY CENTRE GURUGRAM","MODEL TOWN","MOHAN ESTATE","MOHAN NAGAR","MOOLCHAND","MOTI NAGAR","MUNDKA","MUNDKA INDUSTRIAL AREA","MUNIRKA","NAJAFGARH","NANGALI","NANGLOI","NANGLOI RAILWAY STATION","NARAINA VIHAR","NAWADA","NEELAM CHOWK AJRONDA","NEHRU ENCLAVE","NEHRU PLACE","NETAJI SUBHASH PLACE-Pink Line","NETAJI SUBHASH PLACE-Red Line","NEW ASHOK NAGAR","NEW DELHI (AMEL)","NEW DELHI-Yellow Line","NHPC CHOWK","NIRMAN VIHAR","NOIDA CITY CENTRE","Noida Electronic City","NOIDA SECTOR 15","NOIDA SECTOR 16","NOIDA SECTOR 18","Noida Sector 34","Noida Sector 52","Noida Sector 59","Noida Sector 61","Noida Sector 62","OKHLA","OKHLA BIRD CENTURY","OKHLA NSIC","OKHLA VIHAR","PALAM","PANCHSHEEL PARK","Pandit Shri Ram Sharma","PASHCHIM VIHAR EAST","PASHCHIM VIHAR WEST","PATEL CHOWK","PATEL NAGAR","PEERAGARHI","PHASE-1","PHASE-2","PHASE-3","PITAMPURA","PRATAP NAGAR","PREET VIHAR","PUL BANGASH","PUNJABI BAGH WEST-Pink Line","PUNJABI BAGH-Green Line","QUTABMINAR","R K PURAM","RAJA NAHAR SINGH (Ballavgarh)","RAJBAGH","RAJDHANI PARK","RAJENDRA NAGAR","RAJENDRA PLACE","RAJIV CHOWK-Yellow Line","RAJOURI GARDEN-Blue Line","RAJOURI GARDEN-Pink Line","RAMESH NAGAR","RITHALA","RK ASHRAM MARG","ROHINI EAST","ROHINI SECT. 18","ROHINI WEST","SADAR BAZAR","SAKET","SAMAYPUR BADLI","SANT SURDAS SIHI","SARAI","SARITA VIHAR","SAROJINI NAGAR MARKET","SECTOR 28","SECTOR 42-43","SECTOR 53-54","SECTOR 54 CHOWK","SECTOR 55-56","SEELAMPUR","SHADIPUR","SHAHDARA","SHAHEED STHAL NEW BUS ADDA","SHAHID NAGAR","SHAKURPUR","SHALIMAR BAGH","SHANKAR VIHAR","SHASTRI NAGAR","SHASTRI PARK","SHIV VIHAR","SHIVAJI PARK","SHIVAJI STADIUM","SHYAM PARK","SIKANDARPUR-RMGL","SIKANDERPUR","SIR VISHWESHARAIAH MOTI BAGH","SOUTH EXTENSION","SUBHASH NAGAR","SUKHDEV VIHAR","SULTANPUR","SUPREME COURT","SURAJMAL STADIUM","SURAJMAL STADIUM","TAGORE GARDEN","TIKRI BORDER","TIKRI KALAN","TILAK NAGAR","TISHAZARI","TRILOKPURI","TUGLAKABAD","UDYOG BHAWAN","UDYOG NAGAR","UTTAM NAGAR EAST","UTTAM NAGAR WEST","VAISHALI","VASANT VIHAR","VIDHAN SABHA","VINOBA PURI","VINOD NAGAR EAST Mayur Vihar II","VISHWA VIDYALAYA","WELCOME-Pink Line","WELCOME-Red line","YAMUNA BANK"],
+                    searchQuery: '',
+                    selectedStation: null,
+                    isOpen: false,
+                    message: '',
+                    get filteredStations() {
+                        if (this.searchQuery) {
+                            return this.stations.filter(station => station.toLowerCase().includes(this.searchQuery.toLowerCase()));
+                        }
+                        return this.stations;
+                    },
+                    selectStation(station) {
+                        this.selectedStation = station;
+                        this.searchQuery = station;
+                        this.isOpen = false;
+                    },
+                    checkFileSize() {
+                        const file = this.$refs.fileInput.files[0];
+                        if (file) {
+                            if (file.size > 1 * 1024 * 1024) { // 1 MB in bytes
+                                this.message = 'File size exceeds 1 MB. Please select a smaller file.';
+                                this.$refs.fileInput.value = ''; // Clear the input
+                            } else {
+                                this.message = ''; // Clear any previous messages
+                            }
+                        }
+                    }
+                }   
+            }
+        </script>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html> 

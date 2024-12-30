@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
+
+    <meta name="viewport" content="user-scalable=yes,width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/jquery.validate.min.js"></script>
+    <title>Feedback DMRC</title>
+    <style>
+      label{
+        font-weight: bold;
+      }
+      .custom-file-upload {
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #007bff;
+            color: #007bff;
+            background-color: #ffffff;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .custom-file-upload:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .form-checkbox {
+         transform: scale(1.5);
+      }
+      #inputField {
+    width: 70%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.suggestions {
+    border: 1px solid #ccc;
+    border-top: none;
+    position: absolute;
+    z-index: 10;
+    background-color:#F1E398;
+    min-width: 60%;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    background-color:#f0f0f0;
+}
+
+.suggestion-item:hover {
+    background: #F1E398;
+}
+    </style>
+</head>
+<body>
+
+<div class="container mt-1">
+<div class="row-sm bg-primary">
+    <div class="col-sm ">
+    <legend class="input-group-addon text-center" style="background-color: #4dc8c0"><img  src="../image/Delhi_Metro_logo.svg.png" class="align-text-bottom" height="30px" width="30px" > &nbsp; DMRC-Digital Feedback Book &nbsp;<i class="fa-solid fa-qrcode"></i> </legend>
+    </div>
+    </div>
+        
+
+<form class="" action="/careqr/index.php " method="post" enctype='multipart/form-data' id="contact_form">
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">नाम / Name<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-user-large"></i></span>
+                    </div>
+                    <input type="text" class="form-control" name="name" placeholder="नाम/Enter Name" aria-label="Name" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">ईमेल / E-mail<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
+                    </div>
+                    <input type="email" name="email" class="form-control" placeholder="ई-मेल/E-mail" aria-label="email" required>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">मोबाइल / Mobile #</label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-mobile-screen-button"></i></span>
+                    </div>
+                    <input type="tel" name="mobile" maxlength= "10" minlength="10" class="form-control" placeholder="मोबाइल /Enter Mobile number" aria-label="Phone" required>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+    <label class="col-md-4 col-form-label">स्टेशन नाम / Station Name</label>
+    <div class="col-md-8">
+        <div class="input-group" >
+        <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa fa-map-signs"></i></span>
+                    </div>
+        <input type="text" id="inputField" name="station" placeholder="Search..." class="form-control" >
+        <div id="suggestionsContainer" class="suggestion"></div>
+        </div>
+    </div>
+</div>
+
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">फीडबैक का प्रकार / Type of Feedback<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-list"></i></span>
+                    </div>
+                    <select id='type_feed' name="type_feed" class="form-control selectpicker" required>
+                      <option  disabled selected>विकल्प चुनें /Select a type</option>
+                      <option value="1">शिकायत/ Complaint</option>
+                      <option value="2">सुझाव/ Suggestion</option>
+                      <option value="3">प्रशंसा/ Appreciation</option>
+
+
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id='type_c_main'>
+            <label class="col-md-4 col-form-label">शिकायत का प्रकार / Type of Complaint<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-list"></i></span>
+                    </div>
+                    <select id='type_c' name="type_c" class="form-control selectpicker" required>
+                      <option  disabled selected>विकल्प चुनें /Select a type</option>
+                      <option value="1">ट्रांजैक्शन / Transaction</option>
+                      <option value="2">अन्य विषय/ Other Issue</option>
+
+
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="afc">
+        <div class="form-group row" id='type_on'>
+            <label class="col-md-4 col-form-label">ट्रांजैक्शन का प्रकार/ Type of Transaction<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-list"></i></span>
+                    </div>
+                    <select id='typetxn' name="typetxn" class="form-control selectpicker" >
+                     <option disabled selected>फीडबैक/शिकायत का विकल्प चुनें/Select a Complaint Type</option>
+                      <option value="Online Recharge">ऑनलाइन रिचार्ज/Online Recharge</option>
+                      <option value="UPI related">यूपीआई से संबंधित/UPI related</option>
+
+
+            </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id='txno'>
+            <label class="col-md-4 col-form-label">कार्ड संख्या / Card No.</label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-regular fa-credit-card"></i></span>
+                    </div>
+                    <input name="card" placeholder="कार्ड संख्या/Card no." class="form-control" type="number">
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id='txamt'>
+            <label class="col-md-4 col-form-label">राशि / Amount</label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+                    </div>
+                    <input name="amt" placeholder="राशि /Enter Amount" class="form-control" type="number">
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id='txid'>
+            <label class="col-md-4 col-form-label">ट्रांजैक्शन आईडी / Transaction ID<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-link"></i></span>
+                    </div>
+                    <input name="txnid" placeholder=" ट्रांजैक्शन  आईडी /Transaction ID" class="form-control" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id='txdt'>
+            <label class="col-md-4 col-form-label">ट्रांजैक्शन की तारीख / Date of transaction<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
+                    </div>
+                    <input name="txndt" placeholder="txndt" class="form-control" type="date" max='2024-12-30' min='2024-09-30'>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">विवरण / Description<span class="text-danger">*</span></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-pen-to-square"></i></span>
+                    </div>
+                    <textarea class="form-control" name="comment" placeholder="विवरण/Description" minlength="10" required></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label">संलग्न / Attachment</label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                    </div>
+                    <label class="custom-file-upload" >
+                <input type="file" id="file-upload" name="upload" class="hidden" accept=".jpg,.jpeg,.png,.pdf" />
+                <span id="fname"><i class="fas fa-upload"></i> Choose File (JPEG/JPG/PNG/PDF only)</span>
+            </label>
+            <label class="col-md-4 col-form-label"><span class="text-danger">*Please upload related file/image as per above-mentioned details.</span></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-4 col-form-label"></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-check-double"></i></span>
+                    </div>
+                    <img id="captcha" src=""><span class="border border-secondary " id="cap_call">&nbsp;&nbsp;&nbsp;<input class="form-checkbox align-middle" id="refresh" type="checkbox" required><b>&nbsp;&nbsp;I am not a robot &nbsp;&nbsp;</b></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id="cap_man">
+            <label class="col-md-4 col-form-label"></label>
+            <div class="col-md-8">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                    </div>
+                    <input name="captcha" placeholder="ऊपर लिखे अंक लिखे/ Enter Captcha" class="form-control" type="number" required>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="form-group row">
+            <div class="col-md-8 offset-md-4">
+                <button type="submit" name="submit" class="btn btn-primary w-100" style="background-color:#4CAF50">जमा करे /Submit<span class="fa-regular fa-paper-plane"></span></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+</body>
+
+<script>
+  $(document).ready(function() {
+
+    $('#afc').hide();
+    $('#cap_man').hide();
+
+
+    $("#type_c").change(function() {
+      var x = $(this).val();
+      if (x == 1) {
+        $('#afc').show();
+      }
+      if (x == 2) {
+        $('#afc').hide();
+      }
+    });
+
+    $("#type_feed").change(function() {
+      var x = $(this).val();
+      if (x == 1) {
+        $('#type_c_main').show();
+        $('#txno').show();
+        $('#txamt').show();
+        $('#txid').show();
+        $('#txdt').show();
+        $('#type_on').show();
+      }
+      if (x == 2 || x==3) {
+        $('#type_c_main').hide();
+        $('#txno').hide();
+        $('#txamt').hide();
+        $('#txid').hide();
+        $('#txdt').hide();
+        $('#type_on').hide();
+      }
+    });
+  });
+  $('#file-upload').on('click', function(e) {
+    if($(this).val()!=''){
+    $(this).val(null);
+    $('#fname').html('<i class="fas fa-upload"></i> Choose File');
+    e.preventDefault();
+    }
+  });
+  $("#cap_call").click('#refresh',function(e) {
+      e.preventDefault();
+          e.stopPropagation();
+          $.ajax({
+    url: "../random_p.php",
+    success: function(data) {
+        $('#captcha').attr('src', data);
+        $('#cap_man').show();
+        $('#cap_call').html('<button type="button" id="refresh"><i class="fa fa-refresh" aria-hidden="true"></i></button>');
+    },
+    
+});
+  });
+  $('#file-upload').on('change', function() {
+            // regex = new RegExp('[^.]+$');
+            // extension = $(this).val().match(regex);
+            var numb = $(this)[0].files[0].size / 1024 / 1024;
+            numb = numb.toFixed(2);
+            if (numb > 1) {
+               alert('File size is restricted to "1 MB" ');
+               $(this).val(null);
+            } else {
+              //  var i = $('#fname').clone();
+               var file = $('#file-upload')[0].files[0].name;
+               // $('#fname').addClass('text-danger');
+               $('#fname').html('<i class="fa-sharp fa-solid fa-circle-xmark" style="color:red;"></i>  ' + file);
+            }
+         });
+         $("#contact_form").on('submit', function(e) {
+        e.preventDefault(); // Prevent form submission for validation
+
+        let isValid = true; // Flag to check validity
+
+        // Specific checks for dropdown
+        const typeC = $('#type_c').val();
+        const typeFeed = $('#type_feed').val();
+        // alert(typeFeed);
+        if ((!typeC || typeC.trim() === "") && typeFeed==1) {
+            isValid = false;
+            $('#type_c').addClass('is-invalid');
+            $('#type_c').siblings('.invalid-feedback').remove();
+            $('#type_c').after('<div class="invalid-feedback">Please select a complaint type.</div>');
+        } else {
+            $('#type_c').removeClass('is-invalid');
+            $('#type_c').siblings('.invalid-feedback').remove();
+        }
+
+        // Check specific fields based on dropdown selection
+        if (typeC === "1") {
+            const txnID = $('[name="txnid"]').val();
+            const txnDate = $('[name="txndt"]').val();
+            const typeTxn = $('[name="typetxn"]').val();
+
+            if (!typeTxn || typeTxn.trim() === "") {
+                isValid = false;
+                $('[name="typetxn"]').addClass('is-invalid');
+                $('[name="typetxn"]').siblings('.invalid-feedback').remove();
+                $('[name="typetxn"]').after('<div class="invalid-feedback">Transaction type is required.</div>');
+            } else {
+                $('[name="typetxn"]').removeClass('is-invalid');
+                $('[name="typetxn"]').siblings('.invalid-feedback').remove();
+            }
+
+            if (!txnID) {
+                isValid = false;
+                $('[name="txnid"]').addClass('is-invalid');
+                $('[name="txnid"]').siblings('.invalid-feedback').remove();
+                $('[name="txnid"]').after('<div class="invalid-feedback">Transaction ID is required.</div>');
+            } else {
+                $('[name="txnid"]').removeClass('is-invalid');
+                $('[name="txnid"]').siblings('.invalid-feedback').remove();
+            }
+
+            if (!txnDate) {
+                isValid = false;
+                $('[name="txndt"]').addClass('is-invalid');
+                $('[name="txndt"]').siblings('.invalid-feedback').remove();
+                $('[name="txndt"]').after('<div class="invalid-feedback">Transaction date is required.</div>');
+            } else {
+                $('[name="txndt"]').removeClass('is-invalid');
+                $('[name="txndt"]').siblings('.invalid-feedback').remove();
+            }
+        }
+
+        // If all fields are valid, submit the form
+        if (isValid) {
+          $(this).off('submit').submit();// Proceed with form submission
+        }
+    });
+        
+
+    
+
+
+</script>
+
+<script type="text/javascript">
+        // Force reload if the page was loaded from cache (on back button press)
+        window.onpageshow = function(event) {
+            if (event.persisted || window.performance && window.performance.navigation.type === 2) {
+                // The page was loaded from cache, so force reload
+                window.location.reload();
+            }
+        };
+    </script>
+    <script>
+
+const stn_name=["ADARSH NAGAR","AIIMS","AKSHARDHAM","ANAND VIHAR-Blue Line","ANAND VIHAR-Pink Line","ARJANGARH","ARTHALA","ASHOK PARK MAIN","ASHRAM","AZADPUR-Pink Line","AZADPUR-Yellow Line","BADARPUR","BADKAL MOR","BARAKHAMBA","BATA CHOWK","BELVEDERE TOWERS","BHIKAJI CAMA PLACE","BOTANICAL GARDEN-Blue line","BOTANICAL GARDEN-Magenta Line","BUS STAND (Bahadurgarh City)","CENTRAL SECRETARIAT- Yellow Line","CENTRAL SECRETARIAT-Violet Line","CHANDNI CHOWK","CHAWRI BAZAR","CHHATARPUR","CHIRAG DELHI","CITY PARK (Brig Hoshiar Singh)","CIVIL LINE","CYBER CITY","DABRI MOR","DASHRATPURI","DELHI AEROCITY","DELHI CANT","DELHI GATE","DHANSA BUSS STAND","DHAULA KUAN","DILSHAD GARDEN","DURGABAI DESHMUKH SOUTH CAMPUS-Pink Line","DWARKA","DWARKA 21 (AMEL)","DWARKA MOR","DWARKA SECTOR 10","DWARKA SECTOR 11","DWARKA SECTOR 12","DWARKA SECTOR 13","DWARKA SECTOR 14","DWARKA SECTOR 21-Blue line","DWARKA SECTOR 8","DWARKA SECTOR 9","DWARKA-Grey Line","EAST AZAD NAGAR","ESCORT MUJESAR","ESI HOSPITAL","FARIDABAD OLD","GHEWRA METRO STATION","GHITORINI","GOKULPURI","GOLF COURSE","GOVINDPURI","GREATER KAILASH","GREEN PARK","GTB NAGAR","GURU DRONACHARYA","HAIDARPUR","HAUZ KHAS-Magenta Line","HAUZ KHAS-Yellow Line","HAZRAT NIZAMUDDIN","HINDON RIVER","IFFCO CHOWK","IGDA","IGI AIRPORT","IICC Yashobhoomi","IIT","INA-Pink Line","INA-Yellow Line","INDERLOK-1","INDERLOK-1","INDRAPRASTHA","IP EXTENSION","ITO","JAFFRABAD","JAHANGIRPURI","JAMA MASJID","JAMIA MILIA ISLAMIA","JANAKPURI EAST","JANAKPURI WEST","JANAKPURI WEST-Magenta Line","JANGPURA","JANPATH","JASOLA APOLLO","JASOLA VIHAR","JHANDEWALAN","JHILMIL","JLN STADIUM","JOHRI ENCLAVE","JOR BAGH","KAILASH COLONY","KALINDI KUNJ","KALKAJI MANDIR-Magenta Line","KALKAJI MANDIR-Violet Line","KANHAIYA NAGAR","KARKARDUMA COURT","KARKARDUMA-Blue line","KARKARDUMA-Pink Line","KAROL BAGH","KASHMERE GATE-Red Line","KASHMERE GATE-Violet Line","KASHMERE GATE-Yellow Line","KAUSHAMBI","KESHAVPURAM","KHAN MARKET","KIRSHNA NAGAR","KIRTI NAGAR-Blue Line","KIRTI NAGAR-Green Line","KOHAT ENCLAVE","LAJPAT NAGAR-Pink Line","LAJPAT NAGAR-Violet Line","LAL QUILA","LAXMI NAGAR","LOK KALYAN MARG","MADIPUR","MAJLIS PARK","MALVIYA NAGAR","MANDAWALI- WEST VINOD NAGAR","MANDI HOUSE-Blue line","MANDI HOUSE-Violet Line","MANSAROVAR PARK","MAUJPUR","MAULSARI AVENUE","MAYAPURI","MAYUR VIHAR PH. EXT.","MAYUR VIHAR PHASE I-Blue Line","MAYUR VIHAR PHASE I-Pink Line","MAYUR VIHAR POCKET-I","MEWLA MAHARAJPUR","MG ROAD","MILLENNIUM CITY CENTRE GURUGRAM","MODEL TOWN","MOHAN ESTATE","MOHAN NAGAR","MOOLCHAND","MOTI NAGAR","MUNDKA","MUNDKA INDUSTRIAL AREA","MUNIRKA","NAJAFGARH","NANGALI","NANGLOI","NANGLOI RAILWAY STATION","NARAINA VIHAR","NAWADA","NEELAM CHOWK AJRONDA","NEHRU ENCLAVE","NEHRU PLACE","NETAJI SUBHASH PLACE-Pink Line","NETAJI SUBHASH PLACE-Red Line","NEW ASHOK NAGAR","NEW DELHI (AMEL)","NEW DELHI-Yellow Line","NHPC CHOWK","NIRMAN VIHAR","NOIDA CITY CENTRE","Noida Electronic City","NOIDA SECTOR 15","NOIDA SECTOR 16","NOIDA SECTOR 18","Noida Sector 34","Noida Sector 52","Noida Sector 59","Noida Sector 61","Noida Sector 62","OKHLA","OKHLA BIRD CENTURY","OKHLA NSIC","OKHLA VIHAR","PALAM","PANCHSHEEL PARK","Pandit Shri Ram Sharma","PASHCHIM VIHAR EAST","PASHCHIM VIHAR WEST","PATEL CHOWK","PATEL NAGAR","PEERAGARHI","PHASE-1","PHASE-2","PHASE-3","PITAMPURA","PRATAP NAGAR","PREET VIHAR","PUL BANGASH","PUNJABI BAGH WEST-Pink Line","PUNJABI BAGH-Green Line","QUTABMINAR","R K PURAM","RAJA NAHAR SINGH (Ballavgarh)","RAJBAGH","RAJDHANI PARK","RAJENDRA NAGAR","RAJENDRA PLACE","RAJIV CHOWK-Yellow Line","RAJOURI GARDEN-Blue Line","RAJOURI GARDEN-Pink Line","RAMESH NAGAR","RITHALA","RK ASHRAM MARG","ROHINI EAST","ROHINI SECT. 18","ROHINI WEST","SADAR BAZAR","SAKET","SAMAYPUR BADLI","SANT SURDAS SIHI","SARAI","SARITA VIHAR","SAROJINI NAGAR MARKET","SECTOR 28","SECTOR 42-43","SECTOR 53-54","SECTOR 54 CHOWK","SECTOR 55-56","SEELAMPUR","SHADIPUR","SHAHDARA","SHAHEED STHAL NEW BUS ADDA","SHAHID NAGAR","SHAKURPUR","SHALIMAR BAGH","SHANKAR VIHAR","SHASTRI NAGAR","SHASTRI PARK","SHIV VIHAR","SHIVAJI PARK","SHIVAJI STADIUM","SHYAM PARK","SIKANDARPUR-RMGL","SIKANDERPUR","SIR VISHWESHARAIAH MOTI BAGH","SOUTH EXTENSION","SUBHASH NAGAR","SUKHDEV VIHAR","SULTANPUR","SUPREME COURT","SURAJMAL STADIUM","SURAJMAL STADIUM","TAGORE GARDEN","TIKRI BORDER","TIKRI KALAN","TILAK NAGAR","TISHAZARI","TRILOKPURI","TUGLAKABAD","UDYOG BHAWAN","UDYOG NAGAR","UTTAM NAGAR EAST","UTTAM NAGAR WEST","VAISHALI","VASANT VIHAR","VIDHAN SABHA","VINOBA PURI","VINOD NAGAR EAST Mayur Vihar II","VISHWA VIDYALAYA","WELCOME-Pink Line","WELCOME-Red line","YAMUNA BANK",];
+// Handle keyup event on the input field
+$('#inputField').on('keyup', function () {
+    const query = $(this).val();
+    const search = new RegExp(query, 'i');  // Prepare regex object for case-insensitive matching
+
+    // Filter station names based on the query
+    let filteredSuggestions = stn_name.filter(item => search.test(item));
+
+    // Show suggestions dynamically
+    showSuggestions(filteredSuggestions);
+
+    console.log(filteredSuggestions); // Log filtered suggestions for debugging
+});
+
+// Handle blur event on the input field
+$('#inputField').on('blur', function () {
+    const query = $(this).val();
+    
+    // Check if the entered value is in stn_name
+    if (!stn_name.includes(query)) {
+        // Stop any further action if the value doesn't match
+        console.log('Input does not match any station');
+        $(this).val('');  // Optionally clear the input field
+    }
+});
+
+// Function to display filtered suggestions
+function showSuggestions(suggestions) {
+    const suggestionsContainer = $('#suggestionsContainer');
+    suggestionsContainer.empty();  // Clear previous suggestions
+
+    if (suggestions.length > 0) {
+        suggestionsContainer.show();  // Show suggestions container
+        suggestions.forEach(suggestion => {
+            const suggestionDiv = $('<div>').addClass('suggestion-item').text(suggestion);
+            suggestionDiv.on('click', function () {
+                $('#inputField').val(suggestion);  // Update input field with selected suggestion
+                suggestionsContainer.hide();  // Hide suggestions container after selection
+            });
+            suggestionsContainer.append(suggestionDiv);
+        });
+    } else {
+        suggestionsContainer.hide();  // Hide suggestions if no matches
+    }
+}
+
+
+</script>
+
