@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-md-8" @click.outside="isOpen = false; searchQuery = !stations.includes(searchQuery) ? '' : searchQuery; ">
                     <input type="text" x-model="searchQuery" @focus="isOpen = true" name="station" class="form-control" id="station" placeholder="Search station">
-                    <div x-show="isOpen" class="w-100 border rounded-3" style="max-height: 200px; overflow-y: auto;">
+                    <div x-show="isOpen" class="bg-white border" style="max-height: 170px; overflow-y: auto; position: absolute; z-index: 1;">
                         <template x-for="(station, index) in filteredStations" :key="index">
                             <div  @click="selectStation(station)" class="p-2 border-bottom moucehover">
                                 <span x-text="station"></span>
